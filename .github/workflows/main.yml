@@ -162,6 +162,15 @@ jobs:
         working-directory: iac
         run: echo "ACR_LOGIN_SERVER=$(terraform output -raw acr_login_server)" >> $GITHUB_ENV
 
+        # Re-login para refrescar el OIDC token antes de operar con ACR
+
+      - name: Re-login to Azure (OIDC) before ACR operations
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          
       - name: Docker login to ACR
         run: |
           az acr login --name "${ACR_LOGIN_SERVER%%.*}"
